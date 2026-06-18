@@ -87,4 +87,18 @@ class RentalController extends Controller
         $rental->delete();
         return redirect()->route('rentals.index')->with('success', 'Rental berhasil dihapus!');
     }
+    public function approve(Rental $rental)
+    {
+        $rental->update(['status' => 'active']);
+        $rental->vehicle->update(['status' => 'rented']);
+
+        return redirect()->route('admin.rentals.index')->with('success', 'Rental disetujui!');
+    }
+
+    public function reject(Rental $rental)
+    {
+        $rental->update(['status' => 'cancelled']);
+
+        return redirect()->route('admin.rentals.index')->with('success', 'Rental ditolak!');
+    }
 }

@@ -22,6 +22,8 @@ use App\Http\Controllers\RentalController;
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('vehicles', VehicleController::class);
     Route::resource('rentals', RentalController::class);
+    Route::patch('rentals/{rental}/approve', [RentalController::class, 'approve'])->name('rentals.approve');
+Route::patch('rentals/{rental}/reject', [RentalController::class, 'reject'])->name('rentals.reject');
 });
 
 // Routes khusus Customer
