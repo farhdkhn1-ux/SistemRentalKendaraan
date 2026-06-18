@@ -1,10 +1,22 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\RentalController;
 
+Route::post('/logout', function () {
+    Auth::guard('web')->logout();
 
-Route::view('/', 'welcome');
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+
+    return redirect()->route('home');
+})->middleware('auth')->name('logout');
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
@@ -15,15 +27,13 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 require __DIR__.'/auth.php';
-use App\Http\Controllers\VehicleController;
-use App\Http\Controllers\RentalController;
 
 // Routes khusus Admin
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('vehicles', VehicleController::class);
     Route::resource('rentals', RentalController::class);
     Route::patch('rentals/{rental}/approve', [RentalController::class, 'approve'])->name('rentals.approve');
-Route::patch('rentals/{rental}/reject', [RentalController::class, 'reject'])->name('rentals.reject');
+    Route::patch('rentals/{rental}/reject', [RentalController::class, 'reject'])->name('rentals.reject');
 });
 
 // Routes khusus Customer

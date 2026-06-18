@@ -17,9 +17,7 @@
             <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Data Kendaraan</h3>
-                    <a href="{{ route('vehicles.create') }}"
-                        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                        + Tambah Kendaraan
+                        <a href="{{ route('admin.vehicles.create') }}"
                     </a>
                 </div>
 
@@ -56,9 +54,9 @@
                                 </span>
                             </td>
                             <td class="px-4 py-2 flex gap-2">
-                                <a href="{{ route('vehicles.edit', $v) }}"
+                                <a href="{{ route('admin.vehicles.edit', $v) }}"
                                     class="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500 text-xs">Edit</a>
-                                <form action="{{ route('vehicles.destroy', $v) }}" method="POST"
+                                <form action="{{ route('admin.vehicles.destroy', $v) }}" method="POST"
                                     onsubmit="return confirm('Yakin hapus kendaraan ini?')">
                                     @csrf
                                     @method('DELETE')

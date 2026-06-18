@@ -1,6 +1,8 @@
 <?php
 
 use App\Livewire\Forms\LoginForm;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
@@ -19,6 +21,18 @@ new #[Layout('layouts.guest')] class extends Component
         $this->form->authenticate();
 
         Session::regenerate();
+
+        $user = Auth::user();
+
+        if ($user?->role === 'admin') {
+            $this->redirectRoute('admin.vehicles.index', navigate: true);
+            return;
+        }
+
+        if ($user?->role === 'customer') {
+            $this->redirectRoute('customer.vehicles', navigate: true);
+            return;
+        }
 
         $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
     }

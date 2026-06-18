@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Rental;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
@@ -38,7 +39,7 @@ class CustomerController extends Controller
 
         Rental::create([
             'vehicle_id'    => $vehicle->id,
-            'user_id'       => auth()->id(),
+            'user_id'       => Auth::id(),
             'customer_name' => $request->customer_name,
             'id_number'     => $request->id_number,
             'phone'         => $request->phone,
@@ -55,7 +56,7 @@ class CustomerController extends Controller
     public function myRentals()
     {
         $rentals = Rental::with('vehicle')
-            ->where('user_id', auth()->id())
+            ->where('user_id', Auth::id())
             ->latest()
             ->paginate(10);
         return view('customer.my-rentals', compact('rentals'));
