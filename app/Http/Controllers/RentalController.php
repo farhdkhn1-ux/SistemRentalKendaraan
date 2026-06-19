@@ -101,4 +101,70 @@ class RentalController extends Controller
 
         return redirect()->route('admin.rentals.index')->with('success', 'Rental ditolak!');
     }
+
+    public function returnForm(Rental $rental)
+    {
+        $rental->load('vehicle');
+
+        // Calculate late days
+        $endDate = $rental->end_date;
+        $today = now()->startOfDay();
+        $lateDays = 0;
+
+        if ($today->gt($endDate)) {
+            $lateDays = $endDate->diffInDays($today);
+        }
+
+        // Default late fee = daily_rate * 1.5 * late_days (150% penalty per day)
+        $dailyRate = $rental->vehicle->daily_rate;
+        $lateFeePerDay = $dailyRate * 0.5;
+        $suggestedLateFee = $lateDays * $lateFeePerDay;
+
+        return view('admin.rentals.return', compact('rental', 'lateDays', 'suggestedLateFee', 'lateFeePerDay'));
+    }
+
+    public function returnProcess(Request $request, Rental $rental)
+    {
+        $request->validate([
+            'returned_date'     => 'required|date',
+            'late_fee'          => 'required|numeric|min:0',
+            'fee_lost_key'      => 'required|numeric|min:0',
+            'fee_scratch_dent'  => 'required|numeric|min:0',
+            'fee_lost_stnk'     => 'required|numeric|min:0',
+            'fee_lost_etoll'    => 'required|numeric|min:0',
+            'notes'             => 'nullable',
+        ]);
+
+        $returnedDate = \Carbon\Carbon::parse($request->returned_date);
+        $endDate = $rental->end_date;
+
+        $lateDays = 0;
+        if ($returnedDate->gt($endDate)) {
+            $lateDays = $endDate->diffInDays($returnedDate);
+        }
+
+        $totalFinal = $rental->total_cost 
+            + $request->late_fee 
+            + $request->fee_lost_key 
+            + $request->fee_scratch_dent 
+            + $request->fee_lost_stnk 
+            + $request->fee_lost_etoll;
+
+        $rental->update([
+            'returned_date'     => $request->returned_date,
+            'late_days'         => $lateDays,
+            'late_fee'          => $request->late_fee,
+            'fee_lost_key'      => $request->fee_lost_key,
+            'fee_scratch_dent'  => $request->fee_scratch_dent,
+            'fee_lost_stnk'     => $request->fee_lost_stnk,
+            'fee_lost_etoll'    => $request->fee_lost_etoll,
+            'total_final'       => $totalFinal,
+            'status'            => 'returned',
+            'notes'             => $request->notes ?? $rental->notes,
+        ]);
+
+        $rental->vehicle->update(['status' => 'available']);
+
+        return redirect()->route('admin.rentals.index')->with('success', 'Kendaraan berhasil dikembalikan!');
+    }
 }

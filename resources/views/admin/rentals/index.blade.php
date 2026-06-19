@@ -97,6 +97,53 @@
                 </span>
             </div>
 
+            {{-- Return info for returned rentals --}}
+            @if($r->status === 'returned' && $r->returned_date)
+            <div class="mb-4 bg-green-50 rounded-xl p-3 text-sm space-y-1">
+                <p class="font-semibold text-green-800 mb-2">Info Pengembalian</p>
+                <div class="flex justify-between">
+                    <span class="text-green-700">Tgl Kembali</span>
+                    <span class="font-semibold text-green-800">{{ $r->returned_date->format('d M Y') }}</span>
+                </div>
+                @if($r->late_days > 0)
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-600">Denda Terlambat ({{ $r->late_days }} hari)</span>
+                    <span class="font-semibold text-slate-800">Rp {{ number_format($r->late_fee, 0, ',', '.') }}</span>
+                </div>
+                @endif
+                @if($r->fee_lost_key > 0)
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-600">Denda Kunci Hilang</span>
+                    <span class="font-semibold text-slate-800">Rp {{ number_format($r->fee_lost_key, 0, ',', '.') }}</span>
+                </div>
+                @endif
+                @if($r->fee_scratch_dent > 0)
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-600">Denda Baret/Penyok</span>
+                    <span class="font-semibold text-slate-800">Rp {{ number_format($r->fee_scratch_dent, 0, ',', '.') }}</span>
+                </div>
+                @endif
+                @if($r->fee_lost_stnk > 0)
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-600">Denda STNK Hilang</span>
+                    <span class="font-semibold text-slate-800">Rp {{ number_format($r->fee_lost_stnk, 0, ',', '.') }}</span>
+                </div>
+                @endif
+                @if($r->fee_lost_etoll > 0)
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-600">Denda E-Toll Hilang</span>
+                    <span class="font-semibold text-slate-800">Rp {{ number_format($r->fee_lost_etoll, 0, ',', '.') }}</span>
+                </div>
+                @endif
+                @if($r->total_final)
+                <div class="flex justify-between border-t border-green-200 pt-1 mt-1">
+                    <span class="font-bold text-green-800">Total Akhir</span>
+                    <span class="font-bold text-green-800">Rp {{ number_format($r->total_final, 0, ',', '.') }}</span>
+                </div>
+                @endif
+            </div>
+            @endif
+
             <div class="flex flex-col gap-2">
 
                 @if($r->status === 'pending')
@@ -119,6 +166,13 @@
                             </button>
                         </form>
                     </div>
+                @endif
+
+                @if($r->status === 'active')
+                    <a href="{{ route('admin.rentals.return', $r) }}"
+                       class="w-full bg-emerald-600 text-white text-sm py-2 rounded-lg hover:bg-emerald-700 text-center font-medium">
+                        🔄 Proses Pengembalian
+                    </a>
                 @endif
 
                 <div class="grid grid-cols-2 gap-2">

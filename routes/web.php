@@ -86,6 +86,15 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::patch('/rentals/{rental}/reject', [RentalController::class, 'reject'])
             ->name('rentals.reject');
+
+        /*
+        | Return Vehicle
+        */
+        Route::get('/rentals/{rental}/return', [RentalController::class, 'returnForm'])
+            ->name('rentals.return');
+
+        Route::post('/rentals/{rental}/return', [RentalController::class, 'returnProcess'])
+            ->name('rentals.return.process');
     });
 
 /*
