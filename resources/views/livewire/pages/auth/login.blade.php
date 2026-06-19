@@ -23,18 +23,19 @@ new #[Layout('layouts.guest')] class extends Component
         Session::regenerate();
 
         $user = Auth::user();
+        $intended = Session::get('url.intended');
 
-        if ($user?->role === 'admin') {
-            $this->redirectRoute('admin.vehicles.index', navigate: true);
+        if ($intended) {
+            $this->redirect($intended, navigate: true);
             return;
         }
 
-        if ($user?->role === 'customer') {
-            $this->redirectRoute('customer.vehicles', navigate: true);
-            return;
+        // Redirect admin users to dashboard, customers to home
+        if ($user->role === 'admin') {
+            $this->redirect(route('admin.dashboard', absolute: false), navigate: true);
+        } else {
+            $this->redirect(route('home', absolute: false), navigate: true);
         }
-
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
     }
 }; ?>
 

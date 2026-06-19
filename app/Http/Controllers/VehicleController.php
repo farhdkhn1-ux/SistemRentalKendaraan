@@ -10,12 +10,12 @@ class VehicleController extends Controller
     public function index()
     {
         $vehicles = Vehicle::latest()->paginate(10);
-        return view('vehicles.index', compact('vehicles'));
+        return view('admin.vehicles.index', compact('vehicles'));
     }
 
     public function create()
     {
-        return view('vehicles.create');
+        return view('admin.vehicles.create');
     }
 
     public function store(Request $request)
@@ -33,12 +33,12 @@ class VehicleController extends Controller
 
         Vehicle::create($request->all());
 
-        return redirect()->route('vehicles.index')->with('success', 'Kendaraan berhasil ditambahkan!');
+        return redirect()->route('admin.vehicles.index')->with('success', 'Kendaraan berhasil ditambahkan!');
     }
 
     public function edit(Vehicle $vehicle)
     {
-        return view('vehicles.edit', compact('vehicle'));
+        return view('admin.vehicles.edit', compact('vehicle'));
     }
 
     public function update(Request $request, Vehicle $vehicle)
@@ -56,12 +56,12 @@ class VehicleController extends Controller
 
         $vehicle->update($request->all());
 
-        return redirect()->route('vehicles.index')->with('success', 'Kendaraan berhasil diupdate!');
+        return redirect()->route('admin.vehicles.index')->with('success', 'Kendaraan berhasil diupdate!');
     }
 
     public function destroy(Vehicle $vehicle)
     {
         $vehicle->delete();
-        return redirect()->route('vehicles.index')->with('success', 'Kendaraan berhasil dihapus!');
+        return redirect()->route('admin.vehicles.index')->with('success', 'Kendaraan berhasil dihapus!');
     }
 }

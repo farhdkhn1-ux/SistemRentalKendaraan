@@ -18,10 +18,11 @@
                     @endif
                 @endguest
                 @auth
-                    @if(optional(auth()->user())->role === 'admin')
-                        <a href="{{ route('admin.vehicles.index') }}" class="text-gray-700 hover:text-blue-600">Dashboard Admin</a>
-                    @elseif(optional(auth()->user())->role === 'customer')
+                    @if(auth()->user()->role === 'customer')
+                        <span class="text-gray-700">Halo, {{ auth()->user()->name }}!</span>
                         <a href="{{ route('customer.my-rentals') }}" class="text-gray-700 hover:text-blue-600">Booking Saya</a>
+                    @elseif(auth()->user()->role === 'admin')
+                        <a href="{{ route('admin.vehicles.index') }}" class="text-gray-700 hover:text-blue-600">Dashboard Admin</a>
                     @endif
                     <form method="POST" action="{{ route('logout') }}" class="inline-block">
                         @csrf
@@ -37,6 +38,11 @@
             <div class="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-2 lg:items-center">
                 <div class="space-y-6">
                     <p class="inline-flex rounded-full bg-white/80 px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm">Rental mobil & motor terbaik di Padang</p>
+                    @auth
+                        @if(auth()->user()->role === 'customer')
+                            <p class="text-blue-600 font-semibold mb-2">Selamat datang kembali, {{ auth()->user()->name }}! 👋</p>
+                        @endif
+                    @endauth
                     <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">Sewa Mobil & Motor Mudah, Cepat, Tanpa Ribet di Padang</h1>
                     <p class="max-w-2xl text-lg text-gray-700">RentalKu siap membantu perjalananmu dengan armada terawat, sistem booking online, dan layanan cepat untuk kebutuhan sewa mobil maupun motor di Sumatra Barat.</p>
                     <div class="flex flex-col gap-4 sm:flex-row">
@@ -149,12 +155,12 @@
                             </div>
                             <div class="mt-6">
                                 @guest
-                                    <a href="{{ route('login') }}" class="inline-flex w-full items-center justify-center rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow hover:bg-blue-700 transition">Booking Sekarang</a>
+                                    <a href="{{ route('login') }}" class="inline-flex w-full items-center justify-center rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow hover:bg-blue-700 transition">Login untuk Booking</a>
                                 @else
-                                    @if(optional(auth()->user())->role === 'customer')
+                                    @if(auth()->user()->role === 'customer')
                                         <a href="{{ route('customer.booking', $vehicle) }}" class="inline-flex w-full items-center justify-center rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow hover:bg-blue-700 transition">Booking Sekarang</a>
                                     @else
-                                        <span class="inline-flex w-full items-center justify-center rounded-full bg-gray-300 px-5 py-3 text-sm font-semibold text-gray-700">Khusus Customer</span>
+                                        <span class="inline-flex w-full items-center justify-center rounded-full bg-gray-100 px-5 py-3 text-sm font-semibold text-gray-500">Halaman ini untuk customer</span>
                                     @endif
                                 @endguest
                             </div>
@@ -224,8 +230,10 @@
             <div class="mx-auto max-w-7xl px-6 text-center">
                 <h2 class="text-3xl font-bold sm:text-4xl">Siap Sewa Kendaraan Sekarang?</h2>
                 <p class="mt-4 mx-auto max-w-2xl text-base text-blue-100">Daftar sekarang dan nikmati pengalaman rental tanpa repot bersama RentalKu.</p>
-                <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                    <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-full bg-white px-8 py-3 text-sm font-semibold text-blue-700 shadow-lg transition hover:bg-blue-50">Daftar Sekarang</a>
+                <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                    @guest
+                        <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-full bg-white px-8 py-3 text-sm font-semibold text-blue-700 shadow-lg transition hover:bg-blue-50">Daftar Sekarang</a>
+                    @endguest
                     <a href="https://wa.me/6283139980834" target="_blank" class="inline-flex items-center justify-center rounded-full border border-white px-8 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-white hover:text-blue-700">Hubungi Kami via WhatsApp</a>
                 </div>
             </div>

@@ -19,7 +19,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('rentals.store') }}" method="POST">
+                <form action="{{ route('admin.rentals.store') }}" method="POST">
                     @csrf
                     <div class="grid grid-cols-2 gap-4">
 
@@ -81,7 +81,7 @@
                     <div class="flex gap-3 mt-6">
                         <button type="submit"
                             class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Simpan</button>
-                        <a href="{{ route('rentals.index') }}"
+                        <a href="{{ route('admin.rentals.index') }}"
                             class="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500">Batal</a>
                     </div>
                 </form>

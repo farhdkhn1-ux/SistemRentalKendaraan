@@ -11,13 +11,13 @@ class RentalController extends Controller
     public function index()
     {
         $rentals = Rental::with('vehicle')->latest()->paginate(10);
-        return view('rentals.index', compact('rentals'));
+        return view('admin.rentals.index', compact('rentals'));
     }
 
     public function create()
     {
         $vehicles = Vehicle::where('status', 'available')->get();
-        return view('rentals.create', compact('vehicles'));
+        return view('admin.rentals.create', compact('vehicles'));
     }
 
     public function store(Request $request)
@@ -44,13 +44,13 @@ class RentalController extends Controller
 
         $vehicle->update(['status' => 'rented']);
 
-        return redirect()->route('rentals.index')->with('success', 'Rental berhasil ditambahkan!');
+        return redirect()->route('admin.rentals.index')->with('success', 'Rental berhasil ditambahkan!');
     }
 
     public function edit(Rental $rental)
     {
         $vehicles = Vehicle::all();
-        return view('rentals.edit', compact('rental', 'vehicles'));
+        return view('admin.rentals.edit', compact('rental', 'vehicles'));
     }
 
     public function update(Request $request, Rental $rental)
@@ -78,14 +78,14 @@ class RentalController extends Controller
             $vehicle->update(['status' => 'available']);
         }
 
-        return redirect()->route('rentals.index')->with('success', 'Rental berhasil diupdate!');
+        return redirect()->route('admin.rentals.index')->with('success', 'Rental berhasil diupdate!');
     }
 
     public function destroy(Rental $rental)
     {
         $rental->vehicle->update(['status' => 'available']);
         $rental->delete();
-        return redirect()->route('rentals.index')->with('success', 'Rental berhasil dihapus!');
+        return redirect()->route('admin.rentals.index')->with('success', 'Rental berhasil dihapus!');
     }
     public function approve(Rental $rental)
     {
