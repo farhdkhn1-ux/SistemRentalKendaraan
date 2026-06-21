@@ -97,77 +97,32 @@
                 </span>
             </div>
 
-            {{-- Return info for returned rentals --}}
-            @if($r->status === 'returned' && $r->returned_date)
-            <div class="mb-4 bg-green-50 rounded-xl p-3 text-sm space-y-1">
-                <p class="font-semibold text-green-800 mb-2">Info Pengembalian</p>
-                <div class="flex justify-between">
-                    <span class="text-green-700">Tgl Kembali</span>
-                    <span class="font-semibold text-green-800">{{ $r->returned_date->format('d M Y') }}</span>
-                </div>
-                @if($r->late_days > 0)
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-600">Denda Terlambat ({{ $r->late_days }} hari)</span>
-                    <span class="font-semibold text-slate-800">Rp {{ number_format($r->late_fee, 0, ',', '.') }}</span>
-                </div>
-                @endif
-                @if($r->fee_lost_key > 0)
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-600">Denda Kunci Hilang</span>
-                    <span class="font-semibold text-slate-800">Rp {{ number_format($r->fee_lost_key, 0, ',', '.') }}</span>
-                </div>
-                @endif
-                @if($r->fee_scratch_dent > 0)
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-600">Denda Baret/Penyok</span>
-                    <span class="font-semibold text-slate-800">Rp {{ number_format($r->fee_scratch_dent, 0, ',', '.') }}</span>
-                </div>
-                @endif
-                @if($r->fee_lost_stnk > 0)
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-600">Denda STNK Hilang</span>
-                    <span class="font-semibold text-slate-800">Rp {{ number_format($r->fee_lost_stnk, 0, ',', '.') }}</span>
-                </div>
-                @endif
-                @if($r->fee_lost_etoll > 0)
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-600">Denda E-Toll Hilang</span>
-                    <span class="font-semibold text-slate-800">Rp {{ number_format($r->fee_lost_etoll, 0, ',', '.') }}</span>
-                </div>
-                @endif
-                @if($r->total_final)
-                <div class="flex justify-between border-t border-green-200 pt-1 mt-1">
-                    <span class="font-bold text-green-800">Total Akhir</span>
-                    <span class="font-bold text-green-800">Rp {{ number_format($r->total_final, 0, ',', '.') }}</span>
-                </div>
-                @endif
-            </div>
-            @endif
-
             <div class="flex flex-col gap-2">
 
+                {{-- Pending --}}
                 @if($r->status === 'pending')
-                    <div class="grid grid-cols-2 gap-2">
-                        <form action="{{ route('admin.rentals.approve', $r) }}" method="POST">
-                            @csrf
-                            @method('PATCH')
-                            <button type="submit"
-                                class="w-full bg-green-600 text-white text-sm py-2 rounded-lg hover:bg-green-700">
-                                Approve
-                            </button>
-                        </form>
-
-                        <form action="{{ route('admin.rentals.reject', $r) }}" method="POST">
-                            @csrf
-                            @method('PATCH')
-                            <button type="submit"
-                                class="w-full bg-red-600 text-white text-sm py-2 rounded-lg hover:bg-red-700">
-                                Reject
-                            </button>
-                        </form>
-                    </div>
+                    <button
+                        onclick="openRentalModal(
+                            {{ $r->id }},
+                            '{{ $r->customer_name }}',
+                            '{{ $r->id_number }}',
+                            '{{ $r->phone }}',
+                            '{{ $r->vehicle->brand }} {{ $r->vehicle->model }}',
+                            '{{ $r->start_date->format('d M Y') }}',
+                            '{{ $r->end_date->format('d M Y') }}',
+                            '{{ $r->total_days }}',
+                            '{{ $r->total_cost }}',
+                            '{{ $r->addon_fees }}',
+                            '{{ asset('storage/' . $r->ktp_file) }}',
+                            '{{ asset('storage/' . $r->sim_file) }}',
+                            '{{ asset('storage/' . $r->payment_proof) }}'
+                        )"
+                        class="w-full bg-blue-600 text-white text-sm py-2 rounded-lg hover:bg-blue-700">
+                        Detail
+                    </button>
                 @endif
 
+                {{-- Active --}}
                 @if($r->status === 'active')
                     <a href="{{ route('admin.rentals.return', $r) }}"
                        class="w-full bg-emerald-600 text-white text-sm py-2 rounded-lg hover:bg-emerald-700 text-center font-medium">
@@ -175,6 +130,7 @@
                     </a>
                 @endif
 
+                {{-- Edit + Delete --}}
                 <div class="grid grid-cols-2 gap-2">
                     <a href="{{ route('admin.rentals.edit', $r) }}"
                        class="w-full bg-blue-600 text-white text-sm py-2 rounded-lg hover:bg-blue-700 text-center">
@@ -207,5 +163,79 @@
 <div class="mt-8">
     {{ $rentals->links() }}
 </div>
+
+<!-- Modal -->
+<div id="rentalModal"
+     class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50">
+
+    <div class="bg-white rounded-2xl w-full max-w-2xl p-6 relative">
+
+        <button onclick="closeRentalModal()"
+                class="absolute top-4 right-4 text-xl text-gray-500">
+            ✕
+        </button>
+
+        <h3 class="text-xl font-bold mb-6">Detail Rental</h3>
+
+        <div id="rentalContent"></div>
+
+    </div>
+</div>
+
+<script>
+function openRentalModal(
+    id, customer, ktp, phone, vehicle,
+    start, end, days, total, addon,
+    ktpFile, simFile, paymentProof
+) {
+    document.getElementById('rentalContent').innerHTML = `
+        <div class="space-y-4 text-sm">
+            <div><strong>Customer:</strong> ${customer}</div>
+            <div><strong>No. KTP:</strong> ${ktp}</div>
+            <div><strong>Phone:</strong> ${phone}</div>
+            <div><strong>Kendaraan:</strong> ${vehicle}</div>
+
+            <div><strong>Mulai:</strong> ${start}</div>
+            <div><strong>Selesai:</strong> ${end}</div>
+            <div><strong>Total Hari:</strong> ${days} hari</div>
+
+            <div><strong>Total:</strong> Rp ${Number(total).toLocaleString('id-ID')}</div>
+            <div><strong>Addon Fee:</strong> Rp ${Number(addon).toLocaleString('id-ID')}</div>
+
+            <div class="grid grid-cols-3 gap-4 mt-4">
+                <a href="${ktpFile}" target="_blank" class="text-blue-600 underline">Lihat KTP</a>
+                <a href="${simFile}" target="_blank" class="text-blue-600 underline">Lihat SIM</a>
+                <a href="${paymentProof}" target="_blank" class="text-blue-600 underline">Bukti DP</a>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mt-6">
+                <form method="POST" action="/admin/rentals/${id}/approve">
+                    @csrf
+                    @method('PATCH')
+                    <button class="w-full bg-green-600 text-white py-2 rounded-lg">
+                        Approve
+                    </button>
+                </form>
+
+                <form method="POST" action="/admin/rentals/${id}/reject">
+                    @csrf
+                    @method('PATCH')
+                    <button class="w-full bg-red-600 text-white py-2 rounded-lg">
+                        Reject
+                    </button>
+                </form>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('rentalModal').classList.remove('hidden');
+    document.getElementById('rentalModal').classList.add('flex');
+}
+
+function closeRentalModal() {
+    document.getElementById('rentalModal').classList.add('hidden');
+    document.getElementById('rentalModal').classList.remove('flex');
+}
+</script>
 
 @endsection

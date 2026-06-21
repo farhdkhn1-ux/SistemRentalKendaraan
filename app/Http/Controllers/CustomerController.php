@@ -87,11 +87,12 @@ public function show(Vehicle $vehicle)
     }
 
     public function myRentals()
-    {
-        $rentals = Rental::with('vehicle')
-            ->where('user_id', Auth::id())
-            ->latest()
-            ->paginate(10);
-        return view('customer.my-rentals', compact('rentals'));
-    }
+{
+    $rentals = Rental::with('vehicle')
+        ->where('user_id', auth()->id())
+        ->latest()
+        ->get();
+
+    return view('customer.my-rentals', compact('rentals'));
+}
 }
