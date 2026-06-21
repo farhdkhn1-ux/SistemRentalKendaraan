@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('phone', 20);
             $table->date('start_date');
             $table->date('end_date');
-            $table->integer('total_days')->storedAs('DATEDIFF(end_date, start_date)');
+            $table->integer('total_days');
             $table->decimal('total_cost', 12, 2)->nullable();
             $table->enum('status', ['active', 'returned', 'cancelled'])->default('active');
             $table->text('notes')->nullable();

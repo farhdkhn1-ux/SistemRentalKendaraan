@@ -9,11 +9,44 @@ use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
-    public function vehicles()
-    {
-        $vehicles = Vehicle::where('status', 'available')->paginate(9);
-        return view('customer.vehicles', compact('vehicles'));
+   public function vehicles(Request $request)
+{
+    $query = Vehicle::query();
+
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('brand', 'like', "%{$search}%")
+              ->orWhere('model', 'like', "%{$search}%");
+        });
     }
+
+    if ($request->filled('type')) {
+        $query->where('type', $request->type);
+    }
+
+    if ($request->filled('price_range')) {
+        switch ($request->price_range) {
+            case 'low':
+                $query->where('daily_rate', '<', 200000);
+                break;
+            case 'mid':
+                $query->whereBetween('daily_rate', [200000, 500000]);
+                break;
+            case 'high':
+                $query->where('daily_rate', '>', 500000);
+                break;
+        }
+    }
+
+    $vehicles = $query->latest()->paginate(9)->withQueryString();
+
+    return view('customer.vehicles', compact('vehicles'));
+}
+public function show(Vehicle $vehicle)
+{
+    return view('customer.vehicle-detail', compact('vehicle'));
+}
 
     public function bookingForm(Vehicle $vehicle)
     {

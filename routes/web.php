@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/kendaraan', [CustomerController::class, 'vehicles'])->name('vehicles.catalog');
 
 /*
 |--------------------------------------------------------------------------
@@ -107,12 +108,6 @@ Route::middleware(['auth', 'role:customer'])
     ->prefix('customer')
     ->name('customer.')
     ->group(function () {
-
-        /*
-        | View Vehicles
-        */
-        Route::get('/vehicles', [CustomerController::class, 'vehicles'])
-            ->name('vehicles');
 
         /*
         | Booking Vehicle

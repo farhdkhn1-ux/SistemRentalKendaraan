@@ -15,7 +15,7 @@
 
         <div>
             <div class="p-6 border-b border-slate-800">
-                <h1 class="text-xl font-bold">Fleet Control</h1>
+                <h1 class="text-xl font-bold">Rental ku</h1>
             </div>
 
             <nav class="p-4 space-y-2">
@@ -60,7 +60,7 @@
                 <div class="w-10 h-10 rounded-full bg-blue-500"></div>
                 <div>
                     <p class="font-semibold text-sm">{{ auth()->user()->name }}</p>
-                    <p class="text-xs text-slate-400">Fleet Manager</p>
+                    <p class="text-xs text-slate-400">Rental Manager</p>
                 </div>
             </div>
         </div>
@@ -76,16 +76,7 @@
                 @yield('title', 'Dashboard')
             </h2>
 
-            <div class="flex items-center gap-4">
-                <input type="text"
-                       placeholder="Search..."
-                       class="px-4 py-2 rounded-xl border text-sm">
-
-                <a href="{{ route('admin.rentals.create') }}"
-                   class="bg-black text-white px-4 py-2 rounded-xl text-sm">
-                    + New Rental
-                </a>
-            </div>
+           
         </header>
 
         <!-- Page -->

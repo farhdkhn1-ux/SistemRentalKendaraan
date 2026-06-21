@@ -10,7 +10,8 @@
     <header class="sticky top-0 z-50 bg-white/95 backdrop-blur shadow-sm">
         <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
             <a href="{{ route('home') }}" class="text-2xl font-bold text-blue-600">RentalKu</a>
-            <nav class="flex items-center gap-4 text-sm font-medium">
+           <nav class="flex items-center gap-4 text-sm font-medium">
+                <a href="{{ route('vehicles.catalog') }}" class="text-gray-700 hover:text-blue-600">Kendaraan</a>
                 @guest
                     <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600">Login</a>
                     @if(\Route::has('register'))
@@ -176,7 +177,7 @@
                         <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded-full bg-white px-7 py-3 text-sm font-semibold text-blue-600 shadow hover:bg-blue-50 transition">Lihat Semua Kendaraan</a>
                     @else
                         @if(optional(auth()->user())->role === 'customer')
-                            <a href="{{ route('customer.vehicles') }}" class="inline-flex items-center justify-center rounded-full bg-white px-7 py-3 text-sm font-semibold text-blue-600 shadow hover:bg-blue-50 transition">Lihat Semua Kendaraan</a>
+                            <a href="{{ route('vehicles.catalog') }}" class="inline-flex items-center justify-center rounded-full bg-white px-7 py-3 text-sm font-semibold text-blue-600 shadow hover:bg-blue-50 transition">Lihat Semua Kendaraan</a>
                         @else
                             <a href="{{ route('admin.vehicles.index') }}" class="inline-flex items-center justify-center rounded-full bg-white px-7 py-3 text-sm font-semibold text-blue-600 shadow hover:bg-blue-50 transition">Lihat Dashboard Admin</a>
                         @endif
