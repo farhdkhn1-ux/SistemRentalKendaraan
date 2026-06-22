@@ -196,42 +196,52 @@
     <p><strong>Total Days:</strong> {{ $this->totalDays }}</p>
 
     <div>
-        <h3 class="font-semibold">Add-ons:</h3>
+        <h3 class="font-semibold mb-2">Add-ons:</h3>
         @if($airport_pickup) <p>✔ Airport Pickup</p> @endif
         @if($with_driver) <p>✔ Driver Service</p> @endif
         @if($keyless) <p>✔ Keyless Access</p> @endif
     </div>
 
-    <p><strong>Add-on Fees:</strong> Rp {{ number_format($this->addonFees) }}</p>
+    <p><strong>Add-on Fees:</strong> Rp {{ number_format($this->addonFees, 0, ',', '.') }}</p>
 
     <p class="text-lg font-bold text-blue-600">
-        Total: Rp {{ number_format($this->totalCost) }}
+        Total: Rp {{ number_format($this->totalCost, 0, ',', '.') }}
     </p>
 
-    
+    <!-- DP Section -->
+    <div class="bg-gray-50 rounded-2xl border p-6">
+        <h3 class="font-bold mb-4 text-center">Pembayaran DP 20%</h3>
 
-<div class="bg-white rounded-2xl border p-6 mt-6y-4">
-    <h3 class="font-bold mb-4">Pembayaran DP 20%</h3>
+        <img src="{{ asset('images/qr.jpeg') }}"
+             class="w-64 mx-auto rounded-xl shadow">
 
-    <img src="{{ asset('images/qr.jpeg') }}"
-         class="w-64 mx-auto rounded-xl shadow">
+        <div class="text-center mt-4">
+            <p class="text-sm text-gray-500">Total DP yang harus dibayar</p>
+            <p class="text-2xl font-bold text-blue-600">
+                Rp {{ number_format($this->totalCost * 0.2, 0, ',', '.') }}
+            </p>
+        </div>
 
-    <div class="text-center mt-4">
-        <p class="text-sm text-gray-500">Total DP yang harus dibayar</p>
-        <p class="text-2xl font-bold text-blue-600">
-            Rp {{ number_format($this->totalCost * 0.2, 0, ',', '.') }}
-        </p>
+        <!-- Upload Bukti -->
+        <div class="mt-6">
+            <label class="block text-sm font-medium mb-2">
+                Upload Bukti Transfer
+            </label>
+
+            <input type="file"
+                   wire:model="payment_proof"
+                   class="w-full rounded-xl border-gray-300">
+
+            @error('payment_proof')
+                <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
+            @enderror
+
+            <div wire:loading wire:target="payment_proof"
+                 class="text-blue-500 text-sm mt-2">
+                Uploading...
+            </div>
+        </div>
     </div>
-
-    <div class="mt-6" class="space-y-6">
-        <label class="block text-sm font-medium mb-2">
-            Upload Bukti Transfer
-        </label>
-
-        <input type="file" wire:model="payment_proof"
-               class="w-full rounded-xl border-gray-300">
-    </div>
-    
 
     <div class="flex justify-between">
         <button wire:click="previousStep"
@@ -240,9 +250,9 @@
         </button>
 
         <button wire:click="confirmBooking"
-    class="px-4 py-2 bg-blue-600 text-white rounded-xl">
-    Confirm Booking
-</button>
+            class="px-4 py-2 bg-blue-600 text-white rounded-xl">
+            Confirm Booking
+        </button>
     </div>
 
 </div>

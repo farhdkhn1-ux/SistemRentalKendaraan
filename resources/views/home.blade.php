@@ -76,7 +76,7 @@
             </div>
         </section>
 
-        <section class="bg-gray-50 py-20">
+        <section class="scroll-fade bg-gray-50 py-20">
             <div class="mx-auto max-w-7xl px-6">
                 <div class="mb-12 text-center">
                     <p class="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">Solusi Rental</p>
@@ -102,7 +102,7 @@
             </div>
         </section>
 
-        <section class="py-20">
+        <section class="scroll-fade py-20">
             <div class="mx-auto max-w-7xl px-6">
                 <div class="mb-12 text-center">
                     <p class="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">Kenapa Pilih RentalKu</p>
@@ -133,7 +133,7 @@
             </div>
         </section>
 
-        <section id="kendaraan" class="bg-blue-50 py-20">
+        <section id="kendaraan" class="scroll-fade bg-blue-50 py-20">
             <div class="mx-auto max-w-7xl px-6">
                 <div class="mb-12 text-center">
                     <p class="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">Pilihan Kendaraan</p>
@@ -186,7 +186,7 @@
             </div>
         </section>
 
-        <section class="py-20">
+        <section class="scroll-fade py-20">
             <div class="mx-auto max-w-7xl px-6">
                 <div class="mb-12 text-center">
                     <p class="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">Testimoni</p>
@@ -227,7 +227,7 @@
             </div>
         </section>
 
-        <section class="bg-blue-600 py-20 text-white">
+        <section class="scroll-fade bg-blue-600 py-20 text-white">
             <div class="mx-auto max-w-7xl px-6 text-center">
                 <h2 class="text-3xl font-bold sm:text-4xl">Siap Sewa Kendaraan Sekarang?</h2>
                 <p class="mt-4 mx-auto max-w-2xl text-base text-blue-100">Daftar sekarang dan nikmati pengalaman rental tanpa repot bersama RentalKu.</p>

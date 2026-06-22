@@ -14,9 +14,10 @@ class Rental extends Model
         'phone',
         'ktp_file',
         'sim_file',
+        'payment_proof',
         'start_date',
         'end_date',
-        'total_days',
+       
         'airport_pickup',
         'with_driver',
         'keyless',
@@ -24,6 +25,9 @@ class Rental extends Model
         'pickup_location',
         'returned_date',
         'total_cost',
+        'dp_amount',
+        'remaining_amount',
+        'payment_status',
         'late_days',
         'late_fee',
         'fee_lost_key',
@@ -39,13 +43,18 @@ class Rental extends Model
         'start_date' => 'date',
         'end_date' => 'date',
         'returned_date' => 'date',
+
         'airport_pickup' => 'boolean',
         'with_driver' => 'boolean',
         'keyless' => 'boolean',
-        'total_days' => 'integer',
+
         'late_days' => 'integer',
+
         'total_cost' => 'decimal:2',
         'addon_fees' => 'decimal:2',
+        'dp_amount' => 'decimal:2',
+        'remaining_amount' => 'decimal:2',
+
         'late_fee' => 'decimal:2',
         'fee_lost_key' => 'decimal:2',
         'fee_scratch_dent' => 'decimal:2',

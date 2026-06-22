@@ -44,7 +44,6 @@
 
         <div class="p-4">
             <div class="mb-4 space-y-2 text-sm">
-
                 <div class="flex justify-between">
                     <span>Kendaraan</span>
                     <span class="font-semibold">{{ $r->vehicle->plate_number }}</span>
@@ -99,30 +98,32 @@
 
             <div class="flex flex-col gap-2">
 
-                {{-- Pending --}}
-                @if($r->status === 'pending')
-                    <button
-                        onclick="openRentalModal(
-                            {{ $r->id }},
-                            '{{ $r->customer_name }}',
-                            '{{ $r->id_number }}',
-                            '{{ $r->phone }}',
-                            '{{ $r->vehicle->brand }} {{ $r->vehicle->model }}',
-                            '{{ $r->start_date->format('d M Y') }}',
-                            '{{ $r->end_date->format('d M Y') }}',
-                            '{{ $r->total_days }}',
-                            '{{ $r->total_cost }}',
-                            '{{ $r->addon_fees }}',
-                            '{{ asset('storage/' . $r->ktp_file) }}',
-                            '{{ asset('storage/' . $r->sim_file) }}',
-                            '{{ asset('storage/' . $r->payment_proof) }}'
-                        )"
-                        class="w-full bg-blue-600 text-white text-sm py-2 rounded-lg hover:bg-blue-700">
-                        Detail
-                    </button>
-                @endif
+         @if($r->status === 'pending')
+    @php
+        $rentalData = [
+            'id' => $r->id,
+            'customer' => $r->customer_name,
+            'ktp' => $r->id_number,
+            'phone' => $r->phone,
+            'vehicle' => $r->vehicle->brand . ' ' . $r->vehicle->model,
+            'start' => $r->start_date->format('d M Y'),
+            'end' => $r->end_date->format('d M Y'),
+            'days' => $r->total_days,
+            'total' => $r->total_cost,
+            'addon' => $r->addon_fees,
+            'ktpFile' => asset('storage/' . $r->ktp_file),
+            'simFile' => asset('storage/' . $r->sim_file),
+            'paymentProof' => asset('storage/' . $r->payment_proof),
+        ];
+    @endphp
 
-                {{-- Active --}}
+    <button
+        onclick='openRentalModal(@json($rentalData))'
+        class="w-full bg-blue-600 text-white text-sm py-2 rounded-lg hover:bg-blue-700">
+        Detail
+    </button>
+@endif
+
                 @if($r->status === 'active')
                     <a href="{{ route('admin.rentals.return', $r) }}"
                        class="w-full bg-emerald-600 text-white text-sm py-2 rounded-lg hover:bg-emerald-700 text-center font-medium">
@@ -130,7 +131,6 @@
                     </a>
                 @endif
 
-                {{-- Edit + Delete --}}
                 <div class="grid grid-cols-2 gap-2">
                     <a href="{{ route('admin.rentals.edit', $r) }}"
                        class="w-full bg-blue-600 text-white text-sm py-2 rounded-lg hover:bg-blue-700 text-center">
@@ -164,7 +164,7 @@
     {{ $rentals->links() }}
 </div>
 
-<!-- Modal -->
+<!-- Rental Detail Modal -->
 <div id="rentalModal"
      class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50">
 
@@ -182,34 +182,62 @@
     </div>
 </div>
 
+<!-- Image Preview Modal -->
+<div id="imagePreviewModal"
+     class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80">
+
+    <div class="relative max-w-4xl w-full p-4">
+
+        <button onclick="closeImagePreview()"
+            class="absolute top-2 right-4 text-white text-3xl z-10">
+            ✕
+        </button>
+
+        <img id="previewImage"
+             src=""
+             class="w-full rounded-2xl shadow-lg object-contain max-h-[90vh]">
+    </div>
+</div>
+
 <script>
-function openRentalModal(
-    id, customer, ktp, phone, vehicle,
-    start, end, days, total, addon,
-    ktpFile, simFile, paymentProof
-) {
+function openRentalModal(data) {
     document.getElementById('rentalContent').innerHTML = `
         <div class="space-y-4 text-sm">
-            <div><strong>Customer:</strong> ${customer}</div>
-            <div><strong>No. KTP:</strong> ${ktp}</div>
-            <div><strong>Phone:</strong> ${phone}</div>
-            <div><strong>Kendaraan:</strong> ${vehicle}</div>
 
-            <div><strong>Mulai:</strong> ${start}</div>
-            <div><strong>Selesai:</strong> ${end}</div>
-            <div><strong>Total Hari:</strong> ${days} hari</div>
+            <div><strong>Customer:</strong> ${data.customer}</div>
+            <div><strong>No. KTP:</strong> ${data.ktp}</div>
+            <div><strong>Phone:</strong> ${data.phone}</div>
+            <div><strong>Kendaraan:</strong> ${data.vehicle}</div>
 
-            <div><strong>Total:</strong> Rp ${Number(total).toLocaleString('id-ID')}</div>
-            <div><strong>Addon Fee:</strong> Rp ${Number(addon).toLocaleString('id-ID')}</div>
+            <div><strong>Mulai:</strong> ${data.start}</div>
+            <div><strong>Selesai:</strong> ${data.end}</div>
+            <div><strong>Total Hari:</strong> ${data.days} hari</div>
+
+            <div><strong>Total:</strong> Rp ${Number(data.total).toLocaleString('id-ID')}</div>
+            <div><strong>Addon Fee:</strong> Rp ${Number(data.addon).toLocaleString('id-ID')}</div>
 
             <div class="grid grid-cols-3 gap-4 mt-4">
-                <a href="${ktpFile}" target="_blank" class="text-blue-600 underline">Lihat KTP</a>
-                <a href="${simFile}" target="_blank" class="text-blue-600 underline">Lihat SIM</a>
-                <a href="${paymentProof}" target="_blank" class="text-blue-600 underline">Bukti DP</a>
+
+                <button onclick="previewImage('${data.ktpFile}')"
+                    class="text-blue-600 underline">
+                    Lihat KTP
+                </button>
+
+                <button onclick="previewImage('${data.simFile}')"
+                    class="text-blue-600 underline">
+                    Lihat SIM
+                </button>
+
+                <button onclick="previewImage('${data.paymentProof}')"
+                    class="text-blue-600 underline">
+                    Bukti DP
+                </button>
+
             </div>
 
             <div class="grid grid-cols-2 gap-4 mt-6">
-                <form method="POST" action="/admin/rentals/${id}/approve">
+
+                <form method="POST" action="/admin/rentals/${data.id}/approve">
                     @csrf
                     @method('PATCH')
                     <button class="w-full bg-green-600 text-white py-2 rounded-lg">
@@ -217,14 +245,16 @@ function openRentalModal(
                     </button>
                 </form>
 
-                <form method="POST" action="/admin/rentals/${id}/reject">
+                <form method="POST" action="/admin/rentals/${data.id}/reject">
                     @csrf
                     @method('PATCH')
                     <button class="w-full bg-red-600 text-white py-2 rounded-lg">
                         Reject
                     </button>
                 </form>
+
             </div>
+
         </div>
     `;
 
@@ -235,6 +265,17 @@ function openRentalModal(
 function closeRentalModal() {
     document.getElementById('rentalModal').classList.add('hidden');
     document.getElementById('rentalModal').classList.remove('flex');
+}
+
+function previewImage(src) {
+    document.getElementById('previewImage').src = src;
+    document.getElementById('imagePreviewModal').classList.remove('hidden');
+    document.getElementById('imagePreviewModal').classList.add('flex');
+}
+
+function closeImagePreview() {
+    document.getElementById('imagePreviewModal').classList.add('hidden');
+    document.getElementById('imagePreviewModal').classList.remove('flex');
 }
 </script>
 
